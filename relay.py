@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 
 
-PROXY_URL = 'socks5://127.0.0.1:1080'
 DEST = 'steamcommunity.com'
+PROXY_URL = 'socks5://127.0.0.1:1080'
 
 @dataclass
 class Relay:
@@ -39,4 +39,11 @@ async def main():
 
 
 if __name__ == '__main__':
+    import sys
+    try:
+        PROXY_URL = f'socks5://{sys.argv[1]}:{sys.argv[2]}'
+    except Exception:
+        if len(sys.argv) != 1:
+            print(f'Using default proxy address: "{PROXY_URL}"')
+        pass
     trio.run(main)
