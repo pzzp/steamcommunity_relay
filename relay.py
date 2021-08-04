@@ -83,7 +83,6 @@ if __name__ == '__main__':
         exit(0)
     if '--disable-autostart' in sys.argv:
         disable_autostart()
-        argv.remove('--disable-autostart')
         exit(0)
     if len(argv) == 2:
         PROXY_URL = f'socks5://{sys.argv[0]}:{sys.argv[1]}'
