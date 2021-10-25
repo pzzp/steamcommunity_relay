@@ -103,6 +103,7 @@ if __name__ == '__main__':
         exit(0)
     if '--edit_hosts' in sys.argv:
         edit_hosts_file()
+        exit(0)
     if len(argv) == 2:
         PROXY_URL = f'socks5://{sys.argv[0]}:{sys.argv[1]}'
     elif len(argv) != 0:
