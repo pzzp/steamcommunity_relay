@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 DEST = 'steamcommunity.com'
 PROXY_URL = 'socks5://127.0.0.1:1080'
+BIND_HOST = '127.0.0.251'
 
 @dataclass
 class Relay:
@@ -30,7 +31,7 @@ class Relay:
             nur.start_soon(dowload)
     
     async def relay(self): 
-        await trio.serve_tcp(self._relay, self.port, host='127.0.0.251')
+        await trio.serve_tcp(self._relay, self.port, host=BIND_HOST)
 
 
 async def main():
@@ -66,14 +67,30 @@ def disable_autostart():
     name = 'steamcommnunity_relay'
     delete_reg_value(winreg.HKEY_CURRENT_USER, key_path, name)
 
+def edit_hosts_file():
+    host_path = 'C:/Windows/System32/drivers/etc/hosts' 
+    with open(host_path) as f:
+        lines = list(f)
+    edited = False
+    for i, line in enumerate(lines):
+        if line.lstrip().startswith(BIND_HOST):
+            lines[i] = BIND_HOST + '    ' + DEST
+            edited = True
+    if not edited:
+        lines.append(BIND_HOST + '    ' + DEST)
+    with open(host_path, 'w') as f:
+        f.write('\r\n'.join(lines))
+
 def print_help():
     doc = '''
 python relay.py [option] [host port]
 options:
---autostart                   
---disable-autostart            
+--autostart
+--disable-autostart
+--edit_hosts
 '''
     print(doc)
+
 
 if __name__ == '__main__':
     import sys
@@ -84,6 +101,8 @@ if __name__ == '__main__':
     if '--disable-autostart' in sys.argv:
         disable_autostart()
         exit(0)
+    if '--edit_hosts' in sys.argv:
+        edit_hosts_file()
     if len(argv) == 2:
         PROXY_URL = f'socks5://{sys.argv[0]}:{sys.argv[1]}'
     elif len(argv) != 0:
